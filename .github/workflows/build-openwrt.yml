@@ -29,6 +29,7 @@ env:
   SSH_ACTIONS: false
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
+  UPLOAD_COWTRANSFER: true
   TZ: Asia/Shanghai
 
 jobs:
@@ -112,3 +113,9 @@ jobs:
       with:
         name: OpenWrt_firmware
         path: openwrt/bin/targets/ipq40xx/generic/openwrt-ipq40xx-p2w_r619ac-128m-squashfs-nand-sysupgrade.bin
+
+    - name: Upload firmware to cowtransfer
+      if: env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
+      run: |
+        curl -sL https://git.io/cowtransfer | sh
+        ./cowtransfer-uploader -b 2621440 -s -p 99 -t 3 --hash ${FIRMWARE}
